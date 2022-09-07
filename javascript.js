@@ -28,21 +28,27 @@ function getPlayerChoice() {
 // function playRound takes 2 parameters and returns string declaring winner
 function playRound(playerSelection, computerSelection) {
 
+    let result = "";
+    let output = "";
+
     // three possible results based on player's choice of Rock
     // print out message in console and store output to calculate winner at end
     if (playerSelection == "rock") {
 
         if (computerSelection == "Rock") {
             console.log("You Draw! Rock draws with Rock");
-            output = 0;
+            result = "You Draw! Rock draws with Rock";
+            output = "0";
         }
         else if (computerSelection == "Paper") {
             console.log("You Lose! Paper beats Rock");
-            output = -1;
+            result = "You Lose! Paper beats Rock";
+            output = "-1";
         }
         else if (computerSelection == "Scissors") {
             console.log("You Win! Rock beats Scissors");
-            output = 1;
+            result = "You Win! Rock beats Scissors";
+            output = "1";
         }
     }
 
@@ -52,15 +58,18 @@ function playRound(playerSelection, computerSelection) {
 
         if (computerSelection == "Rock") {
             console.log("You Win! Paper beats Rock");
-            output = 1;
+            result = "You Win! Paper beats Rock";
+            output = "1";
         }
         else if (computerSelection == "Paper") {
             console.log("You Draw! Paper draws with Rock");
-            output = 0;
+            result = "You Draw! Paper draws with Rock";
+            output = "0";
         }
         else if (computerSelection == "Scissors") {
             console.log("You Lose! Scissors beats Paper");
-            output = -1;
+            result = "You Lose! Scissors beats Paper";
+            output = "-1";
         }
     }
 
@@ -70,67 +79,108 @@ function playRound(playerSelection, computerSelection) {
 
         if (computerSelection == "Rock") {
             console.log("You Lose! Rock beats Scissors");
-            output = -1;
+            result = "You Lose! Rock beats Scissors";
+            output = "-1";
         }
         else if (computerSelection == "Paper") {
             console.log("You Win! Scissors beats Paper");
-            output = 1;
+            result = "You Win! Scissors beats Paper";
+            output = "1";
         }
         else if (computerSelection == "Scissors") {
             console.log("You Draw! Scissors draws with Scissors");
-            output = 0;
+            result = "You Draw! Scissors draws with Scissors";
+            output = "0";
         }
     }
 
     // Return 0, 1, or -1 based on if it was a draw, win, or loss for player
-    return output;
+    return [result, output];
 }
 
 
-// function game that does a 5 round game and keeps score, reporting winner or loser at end
 function game() {
 
-    // Set player and computer points at 0 to start, will add 1 based on who wins each game
     let playerPoints = 0;
     let computerPoints = 0;
-    // random variable since cannot use pass to break loop
-    let count = 0;
 
-    // Use for loop to play game 5 times 
-    for (let i = 0; i < 5; i++) {
-        // call getPlayerChoice() defined above to get player's choice of the three
-        playerChoice = getPlayerChoice();
-        // call getComputerChoice() defined above to get comp's random choiec of three
-        computerChoice = getComputerChoice();
-        // Get output value based on who won the round
-        output = playRound(playerChoice, computerChoice);
+    // Create DOM element to be interactive as user presses button
+    const container = document.querySelector(".container");
 
-        // Decide who to add a point value to based on value of output
-        if (output == 0) {
-            count += 1;
-        }
-        else if (output == 1) {
-            playerPoints += 1;
-        }
-        else if (output == -1) {
-            computerPoints += 1;
-        }
-    }
+    const playerScore = document.createElement("p");
+    playerScore.textContent = "Player Score: " + playerPoints;
+    container.appendChild(playerScore);
+
+    const computerScore = document.createElement("p");
+    computerScore.textContent = "Computer Score: " + computerPoints;
+    container.appendChild(computerScore);
+
+    const gameOutcome = document.createElement("p");
+    gameOutcome.textContent = "";
+    container.appendChild(gameOutcome);
+
+    const winner = document.createElement("p");
+    winner.textContent = "";
+    container.appendChild(winner);
+
+    const playAgain = document.createElement("button");
+    playAgain.textContent = "Play Again";
+    container.appendChild(playAgain);
+    playAgain.addEventListener("click", () => {
+        location.reload();
+    })
+
+
+    const buttons = document.querySelectorAll("button");
+    buttons.forEach((button) => {
+        button.addEventListener("click", () => {
+            playerChoice = button.getAttribute("class").toLowerCase();
+            console.log("Player choice " + playerChoice);
     
-    // At end of 5 rounds, look at total value of player and computer poitns to decide winner
-    if (playerPoints > computerPoints) {
-        result = "Winner is the player";
-    }
-    else if (playerPoints < computerPoints) {
-        result = "Winner is the computer";
-    }
-    else {
-        result = "Result is a draw";
-    }
+            computerChoice = getComputerChoice();
+            console.log("Computer choice " + computerChoice);
+            
+            const results = playRound(playerChoice, computerChoice);
+            let result = results[0];
+            let output = Number(results[1]);
 
-    // return a string declaring winner after 5 rounds of RPS
-    return result;
+            gameOutcome.textContent = result;
+    
+            if (output == 0) {
+            }
+            else if (output == 1) {
+                playerPoints += 1;
+                playerScore.textContent = "Player Score: " + playerPoints;
+            }
+            else if (output == -1) {
+                computerPoints += 1;
+                computerScore.textContent = "Computer Score: " + computerPoints;
+            }
+            
+            endGame(playerPoints, computerPoints);
+        })
+    })
+
+
+    function endGame(playerPoints, computerPoints) {
+    
+        if (playerPoints == 5) {
+            winner.textContent = "Player has won the game!";
+
+            document.getElementById("r").disabled = true;
+            document.getElementById("p").disabled = true;
+            document.getElementById("s").disabled = true;
+        }
+
+        if (computerPoints == 5) {
+            winner.textContent = "Computer has won the game!";
+
+            document.getElementById("r").disabled = true;
+            document.getElementById("p").disabled = true;
+            document.getElementById("s").disabled = true;
+        }
+    }
 }
 
-// Print out result of winner after calling game() which returns a string declaring winner
-console.log(game())
+
+game();
